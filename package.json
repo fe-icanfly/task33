@@ -1,0 +1,37 @@
+{
+  "name": "pro-xuming",
+  "version": "1.0.0",
+  "description": "徐铭的课程设计",
+  "main": "gulpflile.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gl.xuming7.com:root/pro-xuming.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "connect": "^3.4.1",
+    "del": "^2.2.0",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-cdn-replace": "^0.2.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^2.3.1",
+    "gulp-css-spriter": "^0.3.3",
+    "gulp-csso": "^1.0.1",
+    "gulp-filter": "^3.0.1",
+    "gulp-imagemin": "^2.4.0",
+    "gulp-include": "^2.1.0",
+    "gulp-less": "^3.0.5",
+    "gulp-livereload": "^3.8.1",
+    "gulp-plumber": "^1.1.0",
+    "gulp-spa": "^0.2.2",
+    "gulp-uglify": "^1.5.2",
+    "gulp-useref": "^3.0.5",
+    "opn": "^4.0.0",
+    "serve-static": "^1.10.2"
+  }
+}
