@@ -5,22 +5,16 @@
 var gulp = require('gulp'),
     path = require('path'),
     connect = require('gulp-connect'), //自动刷新
-    serveStatic = require('serve-static'), //静态文件服务
     del = require('del'), //文件删除
-    plumber = require('gulp-plumber'), //错误处理
-    shell = require('gulp-shell'); //gulp shell命令
+    plumber = require('gulp-plumber'); //错误处理
 //页面处理==  
 var uglify = require('gulp-uglify'), //js压缩
-    useref = require('gulp-useref'), //html静态资源处理
-    concat = require('gulp-concat'), //文件合并
     less = require('gulp-less'), //less编译
     csso = require('gulp-csso'), //css压缩
     autoprefixer = require('gulp-autoprefixer'), //浏览器前缀添加
-    amdOptimize = require('amd-optimize'), //AMD压缩合并
-    livereload = require('gulp-livereload'), //自动刷新页面
-    fileinclude = require('gulp-file-include'), //文件包含
-    imagemin = require('gulp-imagemin'), //图片压缩
-    cdn = require('gulp-cdn-replace');
+    livereload = require('gulp-livereload'); //自动刷新页面
+var webpack = require('webpack-stream');
+var webpackConfig = require('./webpack.config');
 
 
 
@@ -82,16 +76,6 @@ gulp.task('watch', function() {
                 })
             })
         });
-    //image watch
-    gulp.watch('static/img/**', ['imagesBuild'])
-        .on('change', function(event) {
-            return gulp.start(['imagesBuild'], function() {
-                console.log('[img] File ' + event.path + ' was ' + event.type + ' Done...');
-                return gulp.start(['reloadHtml'], function() {
-                    console.log("................. reload html ......................");
-                })
-            })
-        });
     //css watch
     gulp.watch('static/less/**')
         .on('change', function(event) {
@@ -118,22 +102,6 @@ gulp.task('watch', function() {
 
 
 
-
-/**
- * 图片构建相关
- */
-
-//图片压缩
-gulp.task('imageMin', function() {
-    gulp.src('static/img/**')
-        .pipe(imagemin())
-        .pipe(gulp.dest(BUILDDIR + '/img'));
-});
-
-//imagesBuild
-gulp.task('imagesBuild', function() {
-    gulp.start('imageMin');
-});
 /**
  * 页面处理
  * TODO 需要在页面中处理，参见example目录中gulp-useref.html
@@ -142,23 +110,11 @@ gulp.task('imagesBuild', function() {
 gulp.task('viewsBuild', function() {
     return gulp.src('views/**/*.html')
         .pipe(plumber())
-        .pipe(fileinclude({
-            prefix: '@@',
-        }))
-        .pipe(useref({
-            'noAssets': true, //资源不处理，只处理路径
-        }))
         .pipe(gulp.dest(BUILDDIR + '/views'));
 });
 gulp.task('viewsBuild_pro', function() {
     return gulp.src('views/**/*.html')
         .pipe(plumber())
-        .pipe(fileinclude({
-            prefix: '@@',
-        }))
-        .pipe(useref({
-            'noAssets': true, //资源不处理，只处理路径
-        }))
         .pipe(cdn({
             dir: './dist',
             root: {
@@ -198,18 +154,15 @@ gulp.task("libBuild", function() {
 gulp.task("pagesBuild", function() {
     gulp.src('static/js/**/*.js')
         .pipe(plumber())
-        .pipe(fileinclude({
-            prefix: '@@',
-        }))
         .pipe(uglify())
+        .pipe(webpack(webpackConfig))
         .pipe(gulp.dest(BUILDDIR + '/js'))
 });
 gulp.task('pagesBuild_dev', function() {
     gulp.src('static/js/**/*.js')
         .pipe(plumber())
-        .pipe(fileinclude({
-            prefix: '@@',
-        }))
+        .pipe(webpack(webpackConfig))
+        // .pipe(uglify())
         .pipe(gulp.dest(BUILDDIR + '/js'))
 });
 gulp.task('jsBuild', function() {
@@ -227,7 +180,7 @@ gulp.task('jsBuild_dev', function() {
 gulp.task('dev', function() {
     // gulp.start(["clean:dist"], function() {
     // console.log("delete dist =====");
-    return gulp.start(["less", "viewsBuild", 'jsBuild_dev', "imagesBuild"], function() {
+    return gulp.start(["less", "viewsBuild", 'jsBuild_dev'], function() {
         console.log("bulid css js =====");
         return gulp.start(['server'], function() {
             console.log("start server ======")
@@ -243,7 +196,7 @@ gulp.task('dev', function() {
 gulp.task('pro', function() {
     // gulp.start(["clean:dist"], function() {
     // console.log("delete dist =====");
-    return gulp.start(["less", "viewsBuild_pro", 'jsBuild', 'imagesBuild'], function() {
+    return gulp.start(["less", "viewsBuild_pro", 'jsBuild'], function() {
         console.log("完成");
     });
     // });
