@@ -12,9 +12,10 @@ var uglify = require('gulp-uglify'), //js压缩
     less = require('gulp-less'), //less编译
     csso = require('gulp-csso'), //css压缩
     autoprefixer = require('gulp-autoprefixer'), //浏览器前缀添加
-    livereload = require('gulp-livereload'); //自动刷新页面
-var webpack = require('webpack-stream');
-var webpackConfig = require('./webpack.config');
+    fileinclude = require('gulp-file-include'), //文件包含
+    livereload = require('gulp-livereload'), //自动刷新页面
+    webpack = require('webpack-stream'), //webpack打包加入gulp流处理
+    webpackConfig = require('./webpack.config'); //引入webpack配置文件
 
 
 
@@ -56,7 +57,7 @@ gulp.task('reloadHtml', function() {
         .pipe(connect.reload());
 });
 
-/*
+/**
  *
  *   页面监听
  *
@@ -110,6 +111,10 @@ gulp.task('watch', function() {
 gulp.task('viewsBuild', function() {
     return gulp.src('views/**/*.html')
         .pipe(plumber())
+        .pipe(fileinclude({
+            prefix: '@@',
+            basepath: '@file'
+        }))
         .pipe(gulp.dest(BUILDDIR + '/views'));
 });
 gulp.task('viewsBuild_pro', function() {
@@ -124,7 +129,7 @@ gulp.task('viewsBuild_pro', function() {
         }))
         .pipe(gulp.dest(BUILDDIR + '/views'));
 });
-/*
+/**
  *   
  *   CSS处理
  *   Less编译
@@ -162,8 +167,7 @@ gulp.task('pagesBuild_dev', function() {
     gulp.src('static/js/**/*.js')
         .pipe(plumber())
         .pipe(webpack(webpackConfig))
-        // .pipe(uglify())
-        .pipe(gulp.dest(BUILDDIR + '/js'))
+        .pipe(gulp.dest('./' + BUILDDIR + '/js/pages'))
 });
 gulp.task('jsBuild', function() {
     gulp.start(['pagesBuild', 'libBuild']);
@@ -172,32 +176,27 @@ gulp.task('jsBuild_dev', function() {
     gulp.start(['pagesBuild_dev', 'libBuild']);
 });
 
-/*
- *
- * 构建完成后，html文件添加版本号
+
+/**
  * 
+ * @param  {[type]} ) 
+ * @return {[type]}   [description]
  */
 gulp.task('dev', function() {
-    // gulp.start(["clean:dist"], function() {
-    // console.log("delete dist =====");
     return gulp.start(["less", "viewsBuild", 'jsBuild_dev'], function() {
         console.log("bulid css js =====");
         return gulp.start(['server'], function() {
             console.log("start server ======")
             return gulp.start(['watch'], function() {
                 console.log("start watch =========")
-                require('opn')('http://10.252.159.73:3000');
+                require('opn')('http://127.0.0.1:3000/views');
             });
         });
     });
-    // });
 });
 
 gulp.task('pro', function() {
-    // gulp.start(["clean:dist"], function() {
-    // console.log("delete dist =====");
     return gulp.start(["less", "viewsBuild_pro", 'jsBuild'], function() {
         console.log("完成");
     });
-    // });
 });
