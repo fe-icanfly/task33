@@ -74,17 +74,17 @@ gulp.task('watch', function() {
                 console.log('[views] File ' + event.path + ' was ' + event.type + ' Done...........');
                 return gulp.start(['reloadHtml'], function() {
                     console.log("................. reload html ......................");
-                })
-            })
+                });
+            });
         });
     //css watch
     gulp.watch('static/less/**')
         .on('change', function(event) {
             return gulp.start(['less'], function() {
                 console.log('[css] File ' + event.path + ' was ' + event.type + ' Done...');
-                return gulp.start(['reloadHtml'], function() {})
+                return gulp.start(['reloadHtml'], function() {});
 
-            })
+            });
         });
     //js watch
     gulp.watch('static/js/**')
@@ -93,7 +93,7 @@ gulp.task('watch', function() {
                 console.log('[js] File ' + event.path + ' was ' + event.type + ' Done...............');
                 return gulp.start(['reloadHtml'], function() {
                     console.log("................. reload html ......................");
-                })
+                });
             });
         });
 });
@@ -120,13 +120,6 @@ gulp.task('viewsBuild', function() {
 gulp.task('viewsBuild_pro', function() {
     return gulp.src('views/**/*.html')
         .pipe(plumber())
-        .pipe(cdn({
-            dir: './dist',
-            root: {
-                js: 'http://j1.58cdn.com.cn/crop/m/bang/58zhaocaimao',
-                css: 'http://c.58cdn.com.cn/crop/m/bang/58zhaocaimao'
-            }
-        }))
         .pipe(gulp.dest(BUILDDIR + '/views'));
 });
 /**
@@ -179,7 +172,7 @@ gulp.task('jsBuild_dev', function() {
 
 /**
  * 
- * @param  {[type]} ) 
+ * @param  {[type]} ) {n]
  * @return {[type]}   [description]
  */
 gulp.task('dev', function() {
