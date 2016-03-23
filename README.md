@@ -29,7 +29,7 @@ gulp dev
 
 > HTML替换成MD5序列
 
-> gulp clean:dist
+* gulp clean:dist
 
 > 删除dist生成目录
 
