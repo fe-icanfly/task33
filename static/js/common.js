@@ -5,6 +5,5 @@ define(function() {
         url: require('./modules/url'),
         date: require('./modules/date'),
     }
-    alert(1);
     return common;
 })
