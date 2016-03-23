@@ -61,6 +61,7 @@
 	        url: __webpack_require__(4),
 	        date: __webpack_require__(5),
 	    }
+	    alert(1);
 	    return common;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
 

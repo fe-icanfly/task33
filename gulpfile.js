@@ -6,7 +6,8 @@ var gulp = require('gulp'),
     path = require('path'),
     connect = require('gulp-connect'), //自动刷新
     del = require('del'), //文件删除
-    plumber = require('gulp-plumber'); //错误处理
+    plumber = require('gulp-plumber'), //错误处理
+    browserSync = require('browser-sync').create();
 //页面处理==  
 var uglify = require('gulp-uglify'), //js压缩
     less = require('gulp-less'), //less编译
@@ -43,18 +44,33 @@ gulp.task("shell", function() {
 });
 //本地启动
 gulp.task('server', function() {
-    connect.server({
-        root: 'dist',
+    browserSync.init({
+        files: "**",
+        server: "./dist",
         port: 3000,
-        livereload: true
+        routes: {
+            '/third': 'views/sec'
+        },
+        //中间件
+        middleware: function(req, res, next) {
+            console.log('hi middleware');
+            next();
+        }
     });
 });
+// gulp.task('server', function() {
+//     connect.server({
+//         root: 'dist',
+//         port: 3000,
+//         livereload: true
+//     });
+// });
 /*
  * 页面自动刷新
  */
 gulp.task('reloadHtml', function() {
-    gulp.src(BUILDDIR + '/views/*.html')
-        .pipe(connect.reload());
+    console.log(browserSync.reload);
+    browserSync.reload();
 });
 
 /**
@@ -88,14 +104,7 @@ gulp.task('watch', function() {
         });
     //js watch
     gulp.watch('static/js/**')
-        .on('change', function(event) {
-            return gulp.start(['pagesBuild_dev'], function() {
-                console.log('[js] File ' + event.path + ' was ' + event.type + ' Done...............');
-                return gulp.start(['reloadHtml'], function() {
-                    console.log("................. reload html ......................");
-                });
-            });
-        });
+        .on('change', browserSync.reload);
 });
 
 
@@ -115,7 +124,8 @@ gulp.task('viewsBuild', function() {
             prefix: '@@',
             basepath: '@file'
         }))
-        .pipe(gulp.dest(BUILDDIR + '/views'));
+        .pipe(gulp.dest(BUILDDIR + '/views'))
+        .pipe(browserSync.stream());
 });
 gulp.task('viewsBuild_pro', function() {
     return gulp.src('views/**/*.html')
@@ -138,6 +148,8 @@ gulp.task('less', function() {
         }))
         .pipe(csso())
         .pipe(gulp.dest(BUILDDIR + '/css'))
+        .pipe(browserSync.stream());
+
 });
 /*
  *      js处理
@@ -155,12 +167,16 @@ gulp.task("pagesBuild", function() {
         .pipe(uglify())
         .pipe(webpack(webpackConfig))
         .pipe(gulp.dest(BUILDDIR + '/js'))
+        .pipe(browserSync.stream());
+
 });
 gulp.task('pagesBuild_dev', function() {
     gulp.src('static/js/**/*.js')
         .pipe(plumber())
         .pipe(webpack(webpackConfig))
         .pipe(gulp.dest('./' + BUILDDIR + '/js/pages'))
+        .pipe(browserSync.stream());
+
 });
 gulp.task('jsBuild', function() {
     gulp.start(['pagesBuild', 'libBuild']);
@@ -182,7 +198,7 @@ gulp.task('dev', function() {
             console.log("start server ======")
             return gulp.start(['watch'], function() {
                 console.log("start watch =========")
-                require('opn')('http://127.0.0.1:3000/views');
+                    // require('opn')('http://127.0.0.1:3000/views');
             });
         });
     });
