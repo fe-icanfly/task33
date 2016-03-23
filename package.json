@@ -4,11 +4,11 @@
   "description": "lbg-fe公共内容",
   "main": "gulpflile.js",
   "scripts": {
-    "test": "test"
+    "test": "null"
   },
   "repository": {
     "type": "git",
-    "url": "git@192.168.120.171:xuming/58zhaocaimao-new-download.git"
+    "url": "git@192.168.120.171:lbg-fe/common.git"
   },
   "author": "",
   "license": "ISC",
