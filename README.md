@@ -8,6 +8,30 @@ npm -g install gulp
 npm install
 gulp dev
 ```
+## 命令介绍
+* gulp dev
+
+> 启动开发环境，执行CSS压缩编译，JS压缩打包，HTML图片压缩，文件监听，并打开浏览器
+
+* gulp pro
+
+> 发布环境，执行CSS压缩编译，JS压缩打包，图片压缩，添加版本号
+
+* gulp rev:css
+
+> 生成CSS的MD5 序列
+
+* gulp rev:js
+
+> 生成JS的MD5序列
+
+* gulp rev
+
+> HTML替换成MD5序列
+
+> gulp clean:dist
+
+> 删除dist生成目录
 
 ## 插件简介
 
