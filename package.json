@@ -1,16 +1,16 @@
 {
-  "name": "lbg-fe",
+  "name": "ife-task33",
   "version": "1.0.0",
-  "description": "lbg-fe公共内容",
+  "description": "ife-task33",
   "main": "gulpflile.js",
   "scripts": {
     "test": "null"
   },
   "repository": {
     "type": "git",
-    "url": "git@192.168.120.171:lbg-fe/common.git"
+    "url": "https://github.com/fe-icanfly/task33.git"
   },
-  "author": "",
+  "author": "xuming",
   "license": "ISC",
   "devDependencies": {
     "browser-sync": "^2.11.1",
@@ -31,6 +31,7 @@
     "gulp-rev-collector": "^1.0.2",
     "gulp-shell": "^0.5.2",
     "gulp-uglify": "^1.5.2",
+    "less-plugin-est": "^2.0.4",
     "opn": "^4.0.0",
     "serve-static": "^1.10.2",
     "webpack-stream": "^3.1.0"

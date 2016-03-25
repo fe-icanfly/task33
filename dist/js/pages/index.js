@@ -44,10 +44,35 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
 	    var common = __webpack_require__(1);
-	    console.log(common);
-	    common.mobileUtil.fixScreen();
+	    var $ = __webpack_require__(6);
+	    var config = {
+	        width: 10,
+	        height: 10,
+	    };
+	    (function mapinit(){
+		    $(".map-main").append("<ol></ol>");
+		    var $ul = $(".map-main ol");
+		    $ul.append("<li></li>");
+		    var $li = $("li:last-child");
+		    for (var i = 1; i <= config.width; i++) {
+		        $li.append("<span>" + i + "</span>");
+		    }
+		    $(".map-main").append("<ul></ul>");
+		    $ul = $(".map-main ul:last-child");
+		    for (var j = 1; j <= config.height; j++) {
+			    $ul.append("<li></li>");
+		    	$li = $("ul:last-child li:last-child");
+		        for (var i = 1; i <= config.width; i++) {
+		            $li.append("<span></span>");
+		        }
+		    }
+	    	var block = __webpack_require__(7);
+	    	var instructions = __webpack_require__(8);
+		    $(".map-main").append("<div id='block' class='block'></div>");
+		    instructions();
+	    })();
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
 
 /***/ },
@@ -300,6 +325,377 @@
 	    return dateJs;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	    function $(dom) {
+	        var dom = document.querySelector(dom);
+	        if (!dom)
+	            return {
+	                on: function() {},
+	                css: function() {},
+	                off: function() {},
+	            }
+	        return {
+	            on: function(_event, callback) {
+	                if (dom.addEventListener)
+	                    dom.addEventListener(_event, callback, false);
+	                else if (dom.attachEvent) //ie6到ie8  
+	                    target.attachEvent("on" + _event, callback);
+	            },
+	            css: function(a) {
+	                for (i in a) {
+	                    dom.style[i] = a[i];
+	                }
+	            },
+	            off: function(_event) {
+	                dom.removeEventListener(_event, function() {}, false);
+	            },
+	            html: function(a) {
+	                dom.innerHTML = a;
+	            },
+	            attr: function(attr, val) {
+	                console.log(attr + "111" + val);
+	                dom.setAttribute(attr, val);
+	                return dom;
+	            },
+	            append : function(_dom){
+	            	dom.innerHTML += _dom;
+	            },
+	            val : function(){
+	                return dom.value;
+	            }
+	        }
+	    }
+	    return $;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	    var $ = __webpack_require__(6);
+	    var block = function() {
+	        this.position = {
+	            x: 0,
+	            y: 0.
+	        };
+	        this.direction = "top";
+	        this.dom = $("#block");
+	    };
+	    block.prototype = {
+	        setPostiton: function() {
+	            this.dom = $("#block");
+	            this.dom.css({
+	                "left": this.position.x*30 + "px",
+	                "top": this.position.y*30 + "px",
+	            })
+	        },
+	        setRotate: function() {
+	            this.dom = $("#block");
+	            var _thisRotate = 0
+	            switch (this.direction) {
+	                case "top":
+	                    _thisRotate = 0;
+	                    break;
+	                case "left":
+	                    _thisRotate = -90;
+	                    break;
+	                case "right":
+	                    _thisRotate = 90;
+	                    break;
+	                case "bottom":
+	                    _thisRotate = 180;
+	                    break;
+	            }
+	            this.dom.css({
+	                "transform": "rotate(" + _thisRotate + "deg)"
+	            })
+	        }
+	    }
+	    block.prototype.move = function() {
+	        var _this = this;
+	        return {
+	            to: function(x, y) {
+	                _this.position.x += x;
+	                _this.position.y += y;
+	                _this.setPostiton();
+	            },
+	            top: function(px) {
+	                var _px = px || 1;
+	                this.to(0, -_px);
+	            },
+	            left: function(px) {
+	                var _px = px || 1;
+	                this.to(-_px, 0);
+	            },
+	            bottom: function(px) {
+	                var _px = px || 1;
+	                this.to(0, _px);
+	            },
+	            right: function(px) {
+	                var _px = px || 1;
+	                this.to(_px, 0);
+	            },
+	            next : function(px){
+	                var _px = px || 1;
+	                switch (_this.direction) {
+	                    case "top":
+	                        return [0,-_px];
+	                        break;
+	                    case "left":
+	                        return [-_px,0];
+	                        break;
+	                    case "right":
+	                        return [_px,0];
+	                        break;
+	                    case "bottom":
+	                        return [0,_px];
+	                        break;
+	                }
+	            },
+	            go: function(px) {
+	                var _px = px || 1;
+	                switch (_this.direction) {
+	                    case "top":
+	                        this.top(_px);
+	                        break;
+	                    case "left":
+	                        this.left(_px);
+	                        break;
+	                    case "right":
+	                        this.right(_px);
+	                        break;
+	                    case "bottom":
+	                        this.bottom(_px);
+	                        break;
+	                }
+
+	            }
+	        }
+	    };
+	    block.prototype.rotate = function() {
+	        var _this = this;
+	        return {
+	            top: function(px) {
+	                _this.direction = "top";
+	                _this.setRotate();
+	            },
+	            left: function(px) {
+	                _this.direction = "left";
+	                _this.setRotate();
+	            },
+	            bottom: function(px) {
+	                _this.direction = "bottom";
+	                _this.setRotate();
+	            },
+	            right: function(px) {
+	                _this.direction = "right";
+	                _this.setRotate();
+	            },
+	        }
+	    }
+	    return block;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	    var $ = __webpack_require__(6);
+	    var _block = __webpack_require__(7);
+	    var block = new _block();
+	    var _wall = __webpack_require__(9);
+	    var _textarea = __webpack_require__(10);
+	    var wall = new _wall();
+	    var textarea = new _textarea();
+	    textarea.getInstructions();
+	    /*
+	    把边界当成墙壁来处理
+	     */
+	    for(var i = 0; i < 10;i++){
+	    	wall.add(-1,i);
+	    	wall.add(i,-1);
+	    	wall.add(i,10);
+	    	wall.add(10,i);
+	    }
+	    var instructions = {
+	        /**
+	         * 检测是否碰壁
+	         * @return {[布尔值]} [description] false 为碰壁
+	         */
+	        isWall :function(x,y) {
+	            for (var i = 0; i < wall.all.length; i++) {
+	                if (block.position.x + x == wall.all[i][0] && block.position.y + y == wall.all[i][1]) {
+	                    console.log("碰壁");
+	                    return false;
+	                }
+	            }
+	            return true;
+	        },
+	        moveLeft : function(_x){
+	        	var  x = _x || 1;
+	        	var  y = 0;
+	        	if(this.isWall(-x,y))
+	        		block.move().left(x);
+	        },
+	        moveRight : function(_x){
+	        	var  x = _x || 1;
+	        	var  y = 0;
+	        	if(this.isWall(x,y))
+	           		block.move().right(x);
+	        },
+	        moveTop : function(_y){
+	        	var  x = 0;
+	        	var  y = _y || 1;
+	        	if(this.isWall(x,-y))
+	        		block.move().top(y);
+	        },
+	        moveBottom : function(_y){
+	        	var  x = 0;
+	        	var  y = _y || 1;
+	        	if(this.isWall(x,y))
+	        		block.move().bottom(y);
+	        },
+	        moveGo : function(_px){
+	        	var px = _px || 1;
+	        	var x = block.move().next(px)[0];
+	        	var y = block.move().next(px)[1];
+	        	if(this.isWall(x,y))
+	        	   	block.move().go(px);
+	        },
+	        random : function(){
+	        	return parseInt(Math.random()*10);
+	        },
+	        addWall : function(){
+	            var x = block.move().next()[0];
+	            var y = block.move().next()[1];
+	            wall.add(block.position.x + x,block.position.y+y);
+	        },
+	        /**
+	         * 文本域转换成执行命令
+	         * @param  {[type]} arr [文本域（已经分割成数组）]
+	         * @return {[type]}     [description]
+	         */
+	        transformToInsr : function(arr){
+	            for(var i = 0;i < arr.length;i++){
+	                switch(arr[i]){
+	                    case "go": instructions.moveGo();break;
+	                    case "tun lef" : block.rotate().left();break; 
+	                }
+	            }
+	        }
+
+	    }
+	    instructions.transformToInsr(textarea.getInstructions());
+	    return function() {
+	        $("body").on("keydown", function(e) {
+	            console.log(e.keyCode);
+	            switch (e.keyCode) {
+	                case 37:
+	                    instructions.moveLeft();
+	                    break;
+	                case 38:
+	                    instructions.moveTop();
+	                    break;
+	                case 39:
+	                    instructions.moveRight();
+	                    break;
+	                case 40:
+	                    instructions.moveBottom();
+	                    break;
+	                case 74:
+	                    instructions.moveGo();
+	                    break;
+	                case 75:
+	                    //建立墙体
+	                    instructions.addWall();
+	                    break;
+	                case 87:
+	                    block.rotate().top();
+	                    break;
+	                case 65:
+	                    block.rotate().left();
+	                    break;
+	                case 83:
+	                    block.rotate().bottom();
+	                    break;
+	                case 68:
+	                    block.rotate().right();
+	                    break;
+	                case 79:
+	                   	wall.add(instructions.random(),instructions.random());
+	                    break;
+	            }
+	        })
+	    }
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	    var $ = __webpack_require__(6);
+	    var wall = function(){
+	    	this.all = [
+	    	]
+	    }
+	    $(".map-main").append("<div id='wall'></div>");
+	    /**
+	     * 显示墙的位置
+	     */
+	    wall.prototype.set = function(_left,_top){
+	    	$("#wall").append("<div class='wall'></div>");
+	    	$("#wall .wall:last-child").css({
+	    		top : _top*30 + "px",
+	    		left : _left*30 + "px",
+	    	});
+	    };
+	    /**
+	     * 添加墙
+	     */
+	    wall.prototype.add = function(_x,_y){
+	    	for(var i = 0;i < this.all.length;i++){
+	    		if(this.all[i][0] == _x && this.all[i][1] == _y){
+	    			console.log("墙位置重复");
+	    			return false;
+	    		}
+	    	}
+	    	this.all.push([_x,_y]);
+	    	this.set(_x,_y);
+	    }
+	    wall.prototype.getAll = function(){
+	    	return this.all;
+	    }
+	    return wall;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){
+	    var $ = __webpack_require__(6);
+		var textarea = function(){
+		}
+		textarea.prototype.getVal = function(){
+			return $("#textarea").val();
+		}
+		textarea.prototype.getInstructions = function(){
+			var val = this.getVal();
+			return val.split("\n");
+		}
+		return textarea;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
 
 /***/ }
 /******/ ]);

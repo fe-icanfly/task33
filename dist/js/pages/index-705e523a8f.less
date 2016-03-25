@@ -8,28 +8,21 @@ body {
 
 .map-main {
     width: 300px;
+    display: flex;
     counter-reset: line 0;
     margin: 0 auto;
     position : relative;
 }
-ol{
-  width : 300px;
-  height :30px;
-  li span{
-    display : inline-block;
-    width : 30px;
-  }
-}
+
 .map-main ul li {
-    display: flex;
-    flex-flow: row wrap;
     width: 300px;
     height: 30px;
     line-height: 30px;
     text-align: center;
     position: relative;
     span {
-        border: 1px solid #cccccc;
+        display: inline-block;
+        border: 1px solid #000;
         box-sizing: border-box;
         width : 30px;
         height :30px;
@@ -43,30 +36,20 @@ ol{
     width: 30px;
     text-align: center;
 }
+.map-main ul li:first-child{
+  span {
+    border : none;
+  }
+  &:before{
+    display : none;
+  }
+}
 .block{
   position : absolute;
   top : 0px;
   left : 0px;
   width : 30px;
   height : 30px;
-  border-top: 8px solid blue;
+  border-top: 8px solid #000
   box-sizing : border-box;
-  /*修正显数字显示的造成的top值误差*/
-  margin-top: 30px;
-  background-color: red;
-  transition: all 0.5s;
-}
-#wall{
-  width : 300px;
-  height : 300px;
-  position : absolute;
-  top : 30px;
-  left : 0px;
-  overflow: hidden;
-}
-.wall{
-  position: absolute;
-  width : 30px;
-  height : 30px;
-  background-color: #000;
 }
