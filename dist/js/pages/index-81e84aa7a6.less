@@ -4,7 +4,6 @@ body {
     .margin(0px);
     .padding(0px);
     background: #f1f1f1;
-    overflow: hidden;
 }
 
 .map-main {
@@ -20,7 +19,6 @@ ol {
     li span {
         display: inline-block;
         width: 30px;
-        text-align: center;
     }
 }
 
@@ -55,9 +53,11 @@ ol {
     left: 0px;
     width: 30px;
     height: 30px;
+    border-top: 8px solid blue;
     box-sizing: border-box;
     /*修正显数字显示的造成的top值误差*/
     margin-top: 30px;
+    background-color: red;
     transition: all 0.5s;
 }
 
@@ -74,34 +74,25 @@ ol {
     position: absolute;
     width: 30px;
     height: 30px;
-    svg{
-      width : 30px;
-      height: 30px;
-    }
+    background-color: #000;
 }
 .textarea{
   .absolute(0,0);
-  color: #fff;
-  width: 240px;
   textarea{
     border: none;
     line-height: 20px;
     font-size: 18px;
     height: 100%;
-    background-color: #5c97df;
-    color: #fff;
-    .padding(_,_,_,40px);
+    background-color: #63bdba;
+    .padding(50px,_,_,_);
     &:focus{
       border: none;
     }
   }
   .textareaNum {
       .absolute(0,0);
-      font-size: 12px;
-      background-color: #63bdba;
-      width : 20px; 
-      .padding(3px,5px,_,_);
-      text-align: right;
+      width : 20px;
+      text-align: center;
       .numDiv {
           height: 20px;
           line-height: 20px;

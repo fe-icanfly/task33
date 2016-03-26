@@ -20,7 +20,6 @@ ol {
     li span {
         display: inline-block;
         width: 30px;
-        text-align: center;
     }
 }
 
@@ -55,9 +54,11 @@ ol {
     left: 0px;
     width: 30px;
     height: 30px;
+    border-top: 8px solid blue;
     box-sizing: border-box;
     /*修正显数字显示的造成的top值误差*/
     margin-top: 30px;
+    background-color: red;
     transition: all 0.5s;
 }
 
@@ -74,15 +75,11 @@ ol {
     position: absolute;
     width: 30px;
     height: 30px;
-    svg{
-      width : 30px;
-      height: 30px;
-    }
+    background-color: #000;
 }
 .textarea{
   .absolute(0,0);
   color: #fff;
-  width: 240px;
   textarea{
     border: none;
     line-height: 20px;
@@ -97,10 +94,8 @@ ol {
   }
   .textareaNum {
       .absolute(0,0);
-      font-size: 12px;
       background-color: #63bdba;
-      width : 20px; 
-      .padding(3px,5px,_,_);
+      width : 30px;
       text-align: right;
       .numDiv {
           height: 20px;

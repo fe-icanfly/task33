@@ -3,13 +3,14 @@ define(function() {
     var block = function() {
         this.position = {
             x: 0,
-            y: 0.
+            y: 0,
         };
         this.direction = "top";
         this.dom = $("#block");
+        this._rotate = 0;
     };
     block.prototype = {
-        setPostiton: function() {
+        setPostion: function() {
             this.dom = $("#block");
             this.dom.css({
                 "left": this.position.x*30 + "px",
@@ -18,23 +19,18 @@ define(function() {
         },
         setRotate: function() {
             this.dom = $("#block");
-            var _thisRotate = 0
-            switch (this.direction) {
-                case "top":
-                    _thisRotate = 0;
-                    break;
-                case "left":
-                    _thisRotate = -90;
-                    break;
-                case "right":
-                    _thisRotate = 90;
-                    break;
-                case "bottom":
-                    _thisRotate = 180;
-                    break;
+            switch(this._rotate){
+                case 0 : this.direction = "top";break;
+                case 90 : this.direction = "right";break;
+                case -90 : this.direction = "left";break;
+                case 180 : this.direction = "bottom";break;
+                case -180 : this.direction = "bottom";break;
+                case 270 : this.direction = "left";break;
+                case -270 : this.direction = "right";break;
             }
+            var _thisRotate = 0;
             this.dom.css({
-                "transform": "rotate(" + _thisRotate + "deg)"
+                "transform": "rotate(" + this._rotate + "deg)"
             })
         }
     }
@@ -42,9 +38,9 @@ define(function() {
         var _this = this;
         return {
             to: function(x, y) {
-                _this.position.x += x;
-                _this.position.y += y;
-                _this.setPostiton();
+                _this.position.x += parseInt(x);
+                _this.position.y += parseInt(y);
+                _this.setPostion();
             },
             top: function(px) {
                 var _px = px || 1;
@@ -102,22 +98,39 @@ define(function() {
     block.prototype.rotate = function() {
         var _this = this;
         return {
+            addRotate : function(rot){
+                _this._rotate += rot;
+                if(_this._rotate == 360 || _this._rotate == -360){
+                    _this._rotate = 0;
+                }
+                _this.setRotate();
+            },
             top: function(px) {
-                _this.direction = "top";
+                _this._rotate = 0;
                 _this.setRotate();
             },
             left: function(px) {
-                _this.direction = "left";
+                _this._rotate = -90;
                 _this.setRotate();
             },
             bottom: function(px) {
-                _this.direction = "bottom";
+                _this._rotate = 180;
                 _this.setRotate();
             },
             right: function(px) {
-                _this.direction = "right";
+                _this._rotate = 90;
                 _this.setRotate();
             },
+            turnRight : function(){
+                this.addRotate(90);
+            },
+            turnLeft : function(){
+                this.addRotate(-90);
+            },
+             turnBack : function(){
+                this.turnRight();
+                this.turnRight();
+            }
         }
     }
     return block;

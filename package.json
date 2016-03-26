@@ -2,7 +2,7 @@
   "name": "ife-task33",
   "version": "1.0.0",
   "description": "ife-task33",
-  "main": "gulpflile.js",
+  "main": "package.json",
   "scripts": {
     "test": "null"
   },

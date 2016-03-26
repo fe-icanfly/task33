@@ -70,7 +70,8 @@
 		    }
 	    	var block = __webpack_require__(7);
 	    	var instructions = __webpack_require__(8);
-		    $(".map-main").append("<div id='block' class='block'></div>");
+	    	var gitHubLog = '<svg aria-hidden="true" class="octicon octicon-mark-github" height="28" role="img" version="1.1" viewBox="0 0 16 16" width="28"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59 0.4 0.07 0.55-0.17 0.55-0.38 0-0.19-0.01-0.82-0.01-1.49-2.01 0.37-2.53-0.49-2.69-0.94-0.09-0.23-0.48-0.94-0.82-1.13-0.28-0.15-0.68-0.52-0.01-0.53 0.63-0.01 1.08 0.58 1.23 0.82 0.72 1.21 1.87 0.87 2.33 0.66 0.07-0.52 0.28-0.87 0.51-1.07-1.78-0.2-3.64-0.89-3.64-3.95 0-0.87 0.31-1.59 0.82-2.15-0.08-0.2-0.36-1.02 0.08-2.12 0 0 0.67-0.21 2.2 0.82 0.64-0.18 1.32-0.27 2-0.27 0.68 0 1.36 0.09 2 0.27 1.53-1.04 2.2-0.82 2.2-0.82 0.44 1.1 0.16 1.92 0.08 2.12 0.51 0.56 0.82 1.27 0.82 2.15 0 3.07-1.87 3.75-3.65 3.95 0.29 0.25 0.54 0.73 0.54 1.48 0 1.07-0.01 1.93-0.01 2.2 0 0.21 0.15 0.46 0.55 0.38C13.71 14.53 16 11.53 16 8 16 3.58 12.42 0 8 0z"></path></svg>';
+		    $(".map-main").append("<div id='block' class='block'>"+gitHubLog+"</div>");
 		    instructions();
 	    })();
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
@@ -382,13 +383,14 @@
 	    var block = function() {
 	        this.position = {
 	            x: 0,
-	            y: 0.
+	            y: 0,
 	        };
 	        this.direction = "top";
 	        this.dom = $("#block");
+	        this._rotate = 0;
 	    };
 	    block.prototype = {
-	        setPostiton: function() {
+	        setPostion: function() {
 	            this.dom = $("#block");
 	            this.dom.css({
 	                "left": this.position.x*30 + "px",
@@ -397,23 +399,18 @@
 	        },
 	        setRotate: function() {
 	            this.dom = $("#block");
-	            var _thisRotate = 0
-	            switch (this.direction) {
-	                case "top":
-	                    _thisRotate = 0;
-	                    break;
-	                case "left":
-	                    _thisRotate = -90;
-	                    break;
-	                case "right":
-	                    _thisRotate = 90;
-	                    break;
-	                case "bottom":
-	                    _thisRotate = 180;
-	                    break;
+	            switch(this._rotate){
+	                case 0 : this.direction = "top";break;
+	                case 90 : this.direction = "right";break;
+	                case -90 : this.direction = "left";break;
+	                case 180 : this.direction = "bottom";break;
+	                case -180 : this.direction = "bottom";break;
+	                case 270 : this.direction = "left";break;
+	                case -270 : this.direction = "right";break;
 	            }
+	            var _thisRotate = 0;
 	            this.dom.css({
-	                "transform": "rotate(" + _thisRotate + "deg)"
+	                "transform": "rotate(" + this._rotate + "deg)"
 	            })
 	        }
 	    }
@@ -421,9 +418,9 @@
 	        var _this = this;
 	        return {
 	            to: function(x, y) {
-	                _this.position.x += x;
-	                _this.position.y += y;
-	                _this.setPostiton();
+	                _this.position.x += parseInt(x);
+	                _this.position.y += parseInt(y);
+	                _this.setPostion();
 	            },
 	            top: function(px) {
 	                var _px = px || 1;
@@ -481,22 +478,39 @@
 	    block.prototype.rotate = function() {
 	        var _this = this;
 	        return {
+	            addRotate : function(rot){
+	                _this._rotate += rot;
+	                if(_this._rotate == 360 || _this._rotate == -360){
+	                    _this._rotate = 0;
+	                }
+	                _this.setRotate();
+	            },
 	            top: function(px) {
-	                _this.direction = "top";
+	                _this._rotate = 0;
 	                _this.setRotate();
 	            },
 	            left: function(px) {
-	                _this.direction = "left";
+	                _this._rotate = -90;
 	                _this.setRotate();
 	            },
 	            bottom: function(px) {
-	                _this.direction = "bottom";
+	                _this._rotate = 180;
 	                _this.setRotate();
 	            },
 	            right: function(px) {
-	                _this.direction = "right";
+	                _this._rotate = 90;
 	                _this.setRotate();
 	            },
+	            turnRight : function(){
+	                this.addRotate(90);
+	            },
+	            turnLeft : function(){
+	                this.addRotate(-90);
+	            },
+	             turnBack : function(){
+	                this.turnRight();
+	                this.turnRight();
+	            }
 	        }
 	    }
 	    return block;
@@ -515,23 +529,30 @@
 	    var _textarea = __webpack_require__(10);
 	    var wall = new _wall();
 	    var textarea = new _textarea();
-	    textarea.getInstructions();
+	    textarea.initNum();
 	    /*
 	    把边界当成墙壁来处理
 	     */
-	    for(var i = 0; i < 10;i++){
-	    	wall.add(-1,i);
-	    	wall.add(i,-1);
-	    	wall.add(i,10);
-	    	wall.add(10,i);
+	    for (var i = 0; i < 10; i++) {
+	        wall.add(-1, i);
+	        wall.add(i, -1);
+	        wall.add(i, 10);
+	        wall.add(10, i);
 	    }
 	    var instructions = {
 	        /**
 	         * 检测是否碰壁
 	         * @return {[布尔值]} [description] false 为碰壁
 	         */
-	        isWall :function(x,y) {
+	        isWall: function(x, y) {
 	            for (var i = 0; i < wall.all.length; i++) {
+	                var endX = parseInt(block.position.x*1 + x*1);
+	                var endY = parseInt(block.position.y*1 + y*1);
+	                //离开地图判断
+	                if (Math.abs( endX - wall.all[i][0]) > 10 || Math.abs(endY - wall.all[i][1]) >10) {
+	                    console.log("碰壁");
+	                    return false;
+	                }
 	                if (block.position.x + x == wall.all[i][0] && block.position.y + y == wall.all[i][1]) {
 	                    console.log("碰壁");
 	                    return false;
@@ -539,67 +560,170 @@
 	            }
 	            return true;
 	        },
-	        moveLeft : function(_x){
-	        	var  x = _x || 1;
-	        	var  y = 0;
-	        	if(this.isWall(-x,y))
-	        		block.move().left(x);
+	        moveLeft: function(_x) {
+	            var x = _x || 1;
+	            var y = 0;
+	            if (this.isWall(-x, y))
+	                block.move().left(x);
 	        },
-	        moveRight : function(_x){
-	        	var  x = _x || 1;
-	        	var  y = 0;
-	        	if(this.isWall(x,y))
-	           		block.move().right(x);
+	        moveRight: function(_x) {
+	            var x = _x || 1;
+	            var y = 0;
+	            if (this.isWall(x, y))
+	                block.move().right(x);
 	        },
-	        moveTop : function(_y){
-	        	var  x = 0;
-	        	var  y = _y || 1;
-	        	if(this.isWall(x,-y))
-	        		block.move().top(y);
+	        moveTop: function(_y) {
+	            var x = 0;
+	            var y = _y || 1;
+	            if (this.isWall(x, -y))
+	                block.move().top(y);
 	        },
-	        moveBottom : function(_y){
-	        	var  x = 0;
-	        	var  y = _y || 1;
-	        	if(this.isWall(x,y))
-	        		block.move().bottom(y);
+	        moveBottom: function(_y) {
+	            var x = 0;
+	            var y = _y || 1;
+	            if (this.isWall(x, y))
+	                block.move().bottom(y);
 	        },
-	        moveGo : function(_px){
-	        	var px = _px || 1;
-	        	var x = block.move().next(px)[0];
-	        	var y = block.move().next(px)[1];
-	        	if(this.isWall(x,y))
-	        	   	block.move().go(px);
+	        moveGo: function(_px) {
+	            var px = _px || 1;
+	            var x = block.move().next(px)[0];
+	            var y = block.move().next(px)[1];
+	            if (this.isWall(x, y))
+	                block.move().go(px);
 	        },
-	        random : function(){
-	        	return parseInt(Math.random()*10);
+	        random: function() {
+	            return parseInt(Math.random() * 10);
 	        },
-	        addWall : function(){
+	        addWall: function() {
 	            var x = block.move().next()[0];
 	            var y = block.move().next()[1];
-	            wall.add(block.position.x + x,block.position.y+y);
+	            wall.add(block.position.x + x, block.position.y + y);
+	        },
+	        TexEaInstructions: {
+	            tun: function(_instructions) {
+	                switch (_instructions) {
+	                    case "lef":
+	                        block.rotate().turnLeft();
+	                        break;
+	                    case "rig":
+	                        block.rotate().turnRight();
+	                        break;
+	                    case "bac":
+	                        block.rotate().turnBack();
+	                        break;
+	                }
+	            },
+	            mov: function(_instructions, px) {
+	                var _px = px || 1;
+	                switch (_instructions) {
+	                    case "lef":
+	                        block.rotate().left();
+	                        instructions.moveLeft(_px);
+	                        break;
+	                    case "rig":
+	                        block.rotate().right();
+	                        instructions.moveRight(_px);
+	                        break;
+	                    case "top":
+	                        block.rotate().top();
+	                        instructions.moveTop(_px);
+	                        break;
+	                    case "bot":
+	                        block.rotate().bottom();
+	                        instructions.moveBottom(_px);
+	                        break;
+	                    case "to":
+	                        block.position.x = px.split(",")[0] * 1 - 1;
+	                        block.position.y = px.split(",")[1] * 1 - 1;
+	                        block.setPostion();
+	                }
+	            },
+	            tra: function(_instructions, px) {
+	                var _px = px || 1;
+	                switch (_instructions) {
+	                    case "lef":
+	                        instructions.moveLeft(_px);
+	                        break;
+	                    case "rig":
+	                        instructions.moveRight(_px);
+	                        break;
+	                    case "top":
+	                        instructions.moveTop(_px);
+	                        break;
+	                    case "bot":
+	                        instructions.moveBottom(_px);
+	                        break;
+	                }
+	            },
 	        },
 	        /**
-	         * 文本域转换成执行命令
+	         * 文本域转换成执行命令 逐行执行
 	         * @param  {[type]} arr [文本域（已经分割成数组）]
 	         * @return {[type]}     [description]
 	         */
-	        transformToInsr : function(arr){
-	            for(var i = 0;i < arr.length;i++){
-	                switch(arr[i]){
-	                    case "go": instructions.moveGo();break;
-	                    case "tun lef" : block.rotate().left();break; 
+	        transformToInsr: function(arr) {
+	            var _length = arr.length;
+	            var i = 0;
+	            var _this = this;
+	            var error = arr[_length-1].error;
+	            if(error.length > 0){
+	                for(var j = 0;j<error.length;j++){
+	                    var num = error[j]*1+1;
+	                    $(".numDiv:nth-child("+num+")").css({"background":"red"});
 	                }
+	                return false;
+	            }
+	            this.instrSingle(arr[i]);
+	            (function loop(){
+	                i++;
+	                var all = document.querySelectorAll(".numDiv");
+	                for(var k = 0;k<all.length;k++){
+	                    all[k].style.background = "#63bdba";
+	                }
+	                $(".numDiv:nth-child("+i+")").css({"background":"#000"})
+	                if(_length <= i)
+	                    return false;
+	                setTimeout(function(){
+	                    _this.instrSingle(arr[i]);
+	                    loop();
+	                },500)
+	            })();
+	        },
+	        /*
+	        执行单条命令
+	        */
+	        instrSingle: function(instructions) {
+	            if(typeof(instructions) == "object"){
+	                return false;
+	            }
+	            _instructions = instructions.split(" ");
+	            switch (_instructions[0]) {
+	                case "go":
+	                    this.moveGo();
+	                    break;
+	                case "tun":
+	                    this.TexEaInstructions.tun(_instructions[1]);
+	                    break;
+	                case "tra":
+	                    this.TexEaInstructions.tra(_instructions[1], _instructions[2]);
+	                    break;
+	                case "mov":
+	                    this.TexEaInstructions.mov(_instructions[1], _instructions[2]);
+	                    break;
+	                default : this.TexEaInstructions.error(_instructions[1], _instructions[2]);
+	                    break;
 	            }
 	        }
 
 	    }
-	    instructions.transformToInsr(textarea.getInstructions());
 	    return function() {
 	        $("body").on("keydown", function(e) {
-	            console.log(e.keyCode);
 	            switch (e.keyCode) {
 	                case 37:
 	                    instructions.moveLeft();
+	                    break;
+	                case 81:
+	                    instructions.transformToInsr(textarea.getInstructions());
 	                    break;
 	                case 38:
 	                    instructions.moveTop();
@@ -630,9 +754,10 @@
 	                    block.rotate().right();
 	                    break;
 	                case 79:
-	                   	wall.add(instructions.random(),instructions.random());
+	                    wall.add(instructions.random(), instructions.random());
 	                    break;
-	            }
+	            };
+	            return false;
 	        })
 	    }
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
@@ -653,7 +778,8 @@
 	     * 显示墙的位置
 	     */
 	    wall.prototype.set = function(_left,_top){
-	    	$("#wall").append("<div class='wall'></div>");
+	        var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="图形" x="0px" y="0px" width="1024px" height="1024px" viewBox="0 0 1024 1024" enable-background="new 0 0 1024 1024" xml:space="preserve"><path class="svgpath" data-index="path_0" fill="#272636" d="M959.381795 213.313294c0-82.421174-66.815755-149.236929-149.236929-149.236929L213.225801 64.076364c-82.421174 0-149.236929 66.815755-149.236929 149.236929l0 596.919065c0 82.421174 66.815755 149.236929 149.236929 149.236929L810.144866 959.469288c82.421174 0 149.236929-66.815755 149.236929-149.236929L959.381795 213.313294zM884.680443 784.03879c0 56.196906-45.556569 101.753475-101.752452 101.753475L239.41937 885.792265c-56.195883 0-101.752452-45.556569-101.752452-101.753475L137.666918 240.531192c0-56.196906 45.556569-101.753475 101.752452-101.753475l543.509644 0c56.195883 0 101.752452 45.556569 101.752452 101.753475L884.681466 784.03879z"/><path class="svgpath" data-index="path_1" fill="#272636" d="M797.924543 351.166965c9.869788 0 17.869996-8.010441 17.869996-17.869996l0-17.869996c0-9.876951-8.000208-17.869996-17.869996-17.869996l-261.597997 0c1.535983-2.635013 2.478448-5.671163 2.478448-8.934486l0-62.546521c0-9.877975-8.001231-17.869996-17.871019-17.869996l-17.869996 0c-9.869788 0-17.869996 7.993045-17.869996 17.869996l0 62.546521c0 3.263323 0.942465 6.300496 2.477424 8.934486l-261.597997 0c-9.868765 0-17.869996 7.993045-17.869996 17.869996l0 17.869996c0 9.860579 8.001231 17.869996 17.869996 17.869996l80.416518 0 0 116.157533-80.416518 0c-9.868765 0-17.869996 7.993045-17.869996 17.869996l0 17.869996c0 9.859555 8.001231 17.869996 17.869996 17.869996L485.193982 520.934486l0 116.157533L226.074434 637.09202c-9.868765 0-17.869996 7.993045-17.869996 17.869996l0 17.871019c0 9.860579 8.001231 17.869996 17.869996 17.869996l80.416518 0 0 125.09202 53.611012 0L360.101963 690.703031l303.796074 0 0 125.09202 53.611012 0L717.509049 690.703031l80.416518 0c9.869788 0 17.869996-8.009418 17.869996-17.869996l0-17.871019c0-9.876951-8.000208-17.869996-17.869996-17.869996L538.804994 637.09202 538.804994 520.93551l259.119549 0c9.869788 0 17.869996-8.010441 17.869996-17.869996l0-17.869996c0-9.877975-8.000208-17.869996-17.869996-17.869996l-80.416518 0L717.508026 351.166965 797.924543 351.166965zM663.897014 467.324498 360.10094 467.324498 360.10094 351.166965l303.796074 0L663.897014 467.324498z"/></svg>';
+	    	$("#wall").append("<div class='wall'>"+svg+"</div>");
 	    	$("#wall .wall:last-child").css({
 	    		top : _top*30 + "px",
 	    		left : _left*30 + "px",
@@ -687,12 +813,64 @@
 	    var $ = __webpack_require__(6);
 		var textarea = function(){
 		}
-		textarea.prototype.getVal = function(){
-			return $("#textarea").val();
-		}
-		textarea.prototype.getInstructions = function(){
-			var val = this.getVal();
-			return val.split("\n");
+		textarea.prototype = {
+			getVal : function(){
+				return $("#textarea").val();
+			},
+			getInstructions : function(){
+				var val = this.getVal();
+				//检测命令是否合法
+				var instructions = val.split("\n");
+				var length = instructions.length;
+				//末尾添加error信息，如果没有错误返回空数组
+				instructions[length] = {"error" : []};
+				for(var i = 0;i<length;i++){
+					_instructions = instructions[i].split(" ");
+					var all = _instructions[0]+" "+_instructions[1];
+					switch(all){
+						case "go undefined": break;
+						case "tun lef": ;break;
+						case "tun rig": ;break;
+						case "tun bac": ;break;
+						case "tra top": ;break;
+						case "tra lef": ;break;
+						case "tra bot": ;break;
+						case "tra rig": ;break;
+						case "mov top": ;break;
+						case "mov lef": ;break;
+						case "mov bot": ;break;
+						case "mov rig": ;break;
+						case "mov to": ;break;
+						default : instructions[length].error.push(i);break;
+					}
+				}
+				return instructions;
+			},
+			setNum : function(){
+				$div = $(".textareaNum");
+				var _instructions = this.getInstructions();
+				for(var i = 0;i<_instructions.length-1;i++){
+					$div.append("<div class='numDiv'>"+parseInt(i+1)+"</div>")
+				}
+			},
+			resetNum : function(){
+				$(".textareaNum").html("");
+				this.setNum();
+			},
+			initNum : function(){
+				var _this = this;
+				$(".textarea").append("<div class='textareaNum'></div>");
+				this.setNum();
+				$("textarea").on("keyup",function(){
+					_this.resetNum();
+					return false;
+				});
+				$("textarea").on("keydown",function(event){
+					_this.resetNum();
+		    		event.stopPropagation();
+					return false;
+				})
+			}
 		}
 		return textarea;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
